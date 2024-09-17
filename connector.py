@@ -1,9 +1,7 @@
-import matplotlib.pyplot as plt 
-import numpy as np 
 import time
 from datetime import datetime
 
-from config import API_KEY, API_SECRET, ACCOUNT, SYMBOL
+from config import API_KEY, API_SECRET, ACCOUNT, SYMBOL, DATE_LISTING
 from pybit.unified_trading import HTTP
 
 client = HTTP(
@@ -16,12 +14,11 @@ symbol_without_usdt = SYMBOL.replace("USDT", "")
 available_balance = "" 
 
 def get_balance():
-    global available_balance  
-    try: 
+    global available_balance
+    try:
         balance = client.get_wallet_balance(accountType=ACCOUNT)
         
         if balance['retCode'] == 0:
-
             balances = balance['result']['list'][0]['coin']
             
             for coin_info in balances:
@@ -51,14 +48,22 @@ def sell_dogs():
 
 def check_and_sell():
     now = datetime.now()
-    target_time = datetime(now.year, 9, 26, 12, 0, 0)  # 26 settembre alle 12:00
-    
+    target_time = DATE_LISTING
+
+    # Calcola il tempo rimanente fino al target_time
+    time_remaining = target_time - now
+
+    # Stampa data e ora correnti e il tempo rimanente
+    print(f"Ora attuale: {now.strftime('%Y-%m-%d %H:%M:%S')}")
+    print(f"Tempo rimanente fino al target: {str(time_remaining)}")
+
     if now >= target_time:
-        print("È il momento di vendere i DOGS.")
+        print(f"È il momento di vendere i {symbol_without_usdt}")
         get_balance()
         sell_dogs()
     else:
-        print(f"Non è ancora il momento. Attendi fino a {target_time}.")
+        print(f"Non è ancora il momento di vendere {symbol_without_usdt}. Attendi fino a {target_time}.")
+        time.sleep(60)  # Attendere un minuto prima di riprovare
 
 if __name__ == "__main__":
     check_and_sell()

@@ -1,6 +1,6 @@
-# Sell DOGS Script
+# Sell Sheetcoins Script
 
-Questo progetto include uno script Python per vendere automaticamente i DOGS alla data e ora specificata. Questo README fornisce le istruzioni su come configurare e eseguire lo script su un server Linux Ubuntu.
+Questo progetto include uno script Python per vendere automaticamente i sheetcoins farmati alla data e ora specificata del listing. Questo README fornisce le istruzioni su come configurare e eseguire lo script su un server Linux Ubuntu.
 
 ## Configurazione
 
@@ -8,8 +8,8 @@ Questo progetto include uno script Python per vendere automaticamente i DOGS all
 Se non hai già il codice, clona il repository con:
 
 ```sh
-git clone https://github.com/tuo-utente/tuo-repo.git
-cd tuo-repo
+git clone https://github.com/webcuser/bbot.git
+cd bbot
 ```
 
 ### 2. Installa le Dipendenze
@@ -27,6 +27,7 @@ API_KEY = 'la_tua_api_key'
 API_SECRET = 'la_tua_api_secret'
 ACCOUNT = 'UNIFIED'  # Tipo di account, ad esempio: UNIFIED, SPOT, CONTRACT
 SYMBOL = 'DOGSUSDT'  # Simbolo da vendere
+DATE_LISTING = "data del listing"
 ```
 ### 4. Pianifica l'Esecuzione dello Script
 Opzione 1: Usare cron
