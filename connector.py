@@ -1,47 +1,64 @@
-from pybit import HTTP
-from datetime import datetime, timedelta
+import matplotlib.pyplot as plt 
+import numpy as np 
 import time
+from datetime import datetime
 
-# Ваши API-ключ и секрет от Bybit
-API_KEY = 'your_api_key'
-API_SECRET = 'your_api_secret'
+from config import API_KEY, API_SECRET, ACCOUNT, SYMBOL
+from pybit.unified_trading import HTTP
 
-# Подключение к Bybit API
-client = HTTP("https://api.bybit.com", api_key=API_KEY, api_secret=API_SECRET)
-# Подключение к Testnet API Bybit
-""" client = HTTP("https://api-testnet.bybit.com", api_key=API_KEY, api_secret=API_SECRET) """
+client = HTTP(
+    testnet=False,
+    api_key=API_KEY,
+    api_secret=API_SECRET
+)
 
-# Функция для продажи всех монет
-def sell_all_assets():
-    # Получаем баланс пользователя
-    balance = client.get_wallet_balance()["result"]
+symbol_without_usdt = SYMBOL.replace("USDT", "")
+available_balance = "" 
+
+def get_balance():
+    global available_balance  # Dichiarazione come globale per accedere nella funzione sell_dogs
+    try: 
+        balance = client.get_wallet_balance(accountType=ACCOUNT)
+        
+        if balance['retCode'] == 0:
+
+            balances = balance['result']['list'][0]['coin']
+            
+            for coin_info in balances:
+                if coin_info['coin'] == symbol_without_usdt:
+                    coin = coin_info['coin']
+                    available_balance = coin_info.get('walletBalance', 0)
+                    print(f"Coin: {coin}, Available Balance: {available_balance}")
+                    break  
+        else:
+            print(f"Errore dalla API: {balance['retMsg']}")
+    except Exception as e:
+        print(f"Errore durante il recupero del bilancio: {e}")
+
+def sell_dogs():
+    try:
+        # Ordine di mercato
+        order = client.place_order(
+            category="spot",  # spot
+            symbol=SYMBOL,
+            side="Sell",
+            orderType="Market",
+            qty=available_balance
+        )
+        print(f"Ordine di vendita inviato: {order}")
+    except Exception as e:
+        print(f"Errore durante l'invio dell'ordine di vendita: {e}")
+
+def check_and_sell():
+    now = datetime.now()
+    target_time = datetime(now.year, 9, 26, 12, 0, 0)  # 26 settembre alle 12:00
     
-    # Пример для продажи всех доступных USDT
-    symbol = "HMSTRUSDT"  # Валютная пара, которую вы хотите продать
-    side = "Sell"       # Сторона сделки - продажа
-    qty = balance["USDT"]["available_balance"]  # Продать весь баланс USDT
-    
-    # Оформляем рыночный ордер на продажу
-    order = client.place_active_order(
-        symbol=symbol,
-        side=side,
-        order_type="Market",
-        qty=qty,
-        time_in_force="GoodTillCancel"
-    )
-    print(f"Продано {qty} {symbol}")
+    if now >= target_time:
+        print("È il momento di vendere i DOGS.")
+        get_balance()
+        sell_dogs()
+    else:
+        print(f"Non è ancora il momento. Attendi fino a {target_time}.")
 
-# Функция для ожидания времени
-def wait_until_14():
-    target_time = datetime.now().replace(hour=14, minute=0, second=0, microsecond=0)
-    if datetime.now() > target_time:
-        target_time += timedelta(days=1)
-    
-    wait_time = (target_time - datetime.now()).total_seconds()
-    time.sleep(wait_time)
-
-# Основная логика
 if __name__ == "__main__":
-    print("Ждем 14:00 для продажи всех монет...")
-    wait_until_14()
-    sell_all_assets()
+    check_and_sell()
