@@ -16,7 +16,7 @@ symbol_without_usdt = SYMBOL.replace("USDT", "")
 available_balance = "" 
 
 def get_balance():
-    global available_balance  # Dichiarazione come globale per accedere nella funzione sell_dogs
+    global available_balance  
     try: 
         balance = client.get_wallet_balance(accountType=ACCOUNT)
         
