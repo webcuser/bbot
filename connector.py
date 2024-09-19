@@ -1,19 +1,16 @@
-import time
-from datetime import datetime
-
-from config import API_KEY, API_SECRET, ACCOUNT, SYMBOL, DATE_LISTING
+from config import API_KEY, API_SECRET, ACCOUNT, SYMBOL
 from pybit.unified_trading import HTTP
 
 client = HTTP(
     testnet=False,
     api_key=API_KEY,
-    api_secret=API_SECRET
+    api_secret=API_SECRET,
 )
 
 symbol_without_usdt = SYMBOL.replace("USDT", "")
 available_balance = "" 
 
-def get_balance():
+def getBalance():
     global available_balance
     try:
         balance = client.get_wallet_balance(accountType=ACCOUNT)
@@ -28,11 +25,11 @@ def get_balance():
                     print(f"Coin: {coin}, Available Balance: {available_balance}")
                     break  
         else:
-            print(f"Errore dalla API: {balance['retMsg']}")
+            print(f"Error API: {balance['retMsg']}")
     except Exception as e:
-        print(f"Errore durante il recupero del bilancio: {e}")
+        print(f"Error get balance: {e}")
 
-def sell_dogs():
+def sellCoins():
     try:
         # Ordine di mercato
         order = client.place_order(
@@ -40,30 +37,19 @@ def sell_dogs():
             symbol=SYMBOL,
             side="Sell",
             orderType="Market",
-            qty=available_balance
+            recv_window=6000,
+            qty=available_balance,
+            max_retrives=5
         )
         print(f"Ordine di vendita inviato: {order}")
     except Exception as e:
         print(f"Errore durante l'invio dell'ordine di vendita: {e}")
 
-def check_and_sell():
-    now = datetime.now()
-    target_time = DATE_LISTING
+def checkAndSell():
 
-    # Calcola il tempo rimanente fino al target_time
-    time_remaining = target_time - now
-
-    # Stampa data e ora correnti e il tempo rimanente
-    print(f"Ora attuale: {now.strftime('%Y-%m-%d %H:%M:%S')}")
-    print(f"Tempo rimanente fino al target: {str(time_remaining)}")
-
-    if now >= target_time:
-        print(f"È il momento di vendere i {symbol_without_usdt}")
-        get_balance()
-        sell_dogs()
-    else:
-        print(f"Non è ancora il momento di vendere {symbol_without_usdt}. Attendi fino a {target_time}.")
-        time.sleep(60)  # Attendere un minuto prima di riprovare
+    getBalance()
+    sellCoins()
+   
 
 if __name__ == "__main__":
-    check_and_sell()
+    checkAndSell()

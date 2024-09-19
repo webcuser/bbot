@@ -1,74 +1,44 @@
 # Sell Sheetcoins Script
 
-Questo progetto include uno script Python per vendere automaticamente i sheetcoins farmati alla data e ora specificata del listing. Questo README fornisce le istruzioni su come configurare e eseguire lo script su un server Linux Ubuntu.
+This project includes a Python script to automatically sell the farmed sheetcoins at the specified date and time of the listing. This README provides instructions on how to set up and run the script on a Linux Ubuntu server.
 
-## Configurazione
+## Setup
 
-### 1. Clona il Repository
-Se non hai già il codice, clona il repository con:
+### 1. Clone the Repository
+If you don't already have the code, clone the repository with:
 
 ```sh
 git clone https://github.com/webcuser/bbot.git
 cd bbot
+
 ```
 
-### 2. Installa le Dipendenze
-Installa le librerie necessarie utilizzando pip. Assicurati di avere un ambiente Python configurato (potresti considerare di usare un ambiente virtuale per evitare conflitti con altre librerie):
+### 2. Install Dependencies
+Install the required libraries using pip. Make sure you have a Python environment set up (you might consider using a virtual environment to avoid conflicts with other libraries):
 
 ```sh
 pip install -r requirements.txt
 ```
 
-### 3. Configura le Variabili
-Modifica il file config.py con le tue credenziali e configurazioni. Apri config.py e aggiorna i seguenti valori:
+### 3. Configure Variables
+Edit the config.py file with your credentials and settings. Open config.py and update the following values:
 
 ```sh
 API_KEY = 'la_tua_api_key'
 API_SECRET = 'la_tua_api_secret'
-ACCOUNT = 'UNIFIED'  # Tipo di account, ad esempio: UNIFIED, SPOT, CONTRACT
-SYMBOL = 'DOGSUSDT'  # Simbolo da vendere
-DATE_LISTING = "data del listing"
+ACCOUNT = 'UNIFIED'  # EX: UNIFIED, SPOT, CONTRACT
+SYMBOL = 'DOGSUSDT'  
 ```
-### 4. Pianifica l'Esecuzione dello Script
-Opzione 1: Usare cron
-Per eseguire lo script automaticamente il 26 settembre alle 12:00, puoi aggiungere un cron job. Esegui:
+### 4. Schedule the Script Execution
+Option 1: Use cron To run the script automatically on September 26 at 12:00 PM, you can add a cron job. Run:
 
 ```sh
 crontab -e
 ```
-Aggiungi la seguente riga al file crontab per eseguire lo script alla data e ora specificata:
+Add the following line to the crontab file to execute the script at the specified date and time:
 
 ```sh
-0 12 26 9 * /usr/bin/python3 /percorso/assoluto/al/sell_dogs.py
+0 12 20 9 * /usr/bin/python3 /absolute/path/to/connector.py
 ```
-Sostituisci /percorso/assoluto/al/sell_dogs.py con il percorso corretto del tuo script Python.
+Make sure to replace /absolute/path/to/connector.py with the actual path to your Python script.
 
-Opzione 2: Usare systemd
-Se preferisci usare systemd, segui questi passaggi:
-
-### 1. Crea un file di servizio in /etc/systemd/system/sell_dogs.service con il seguente contenuto:
-```sh
-[Unit]
-Description=Sell DOGS Script
-
-[Service]
-ExecStart=/usr/bin/python3 /percorso/assoluto/al/sell_dogs.py
-WorkingDirectory=/percorso/assoluto/al/
-Restart=on-failure
-
-[Install]
-WantedBy=multi-user.target
-```
-### 2. Ricarica systemd per riconoscere il nuovo servizio:
-
-```sh
-sudo systemctl daemon-reload
-```
-### 3. Abilita il servizio per l'avvio automatico:
-```sh
-sudo systemctl enable sell_dogs.service
-```
-### 4. Avvia il servizio:
-```sh
-sudo systemctl start sell_dogs.service
-```
