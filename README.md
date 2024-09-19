@@ -29,16 +29,11 @@ API_SECRET = 'la_tua_api_secret'
 ACCOUNT = 'UNIFIED'  # EX: UNIFIED, SPOT, CONTRACT
 SYMBOL = 'DOGSUSDT'  
 ```
-### 4. Schedule the Script Execution
-Option 1: Use cron To run the script automatically on September 26 at 12:00 PM, you can add a cron job. Run:
+### 4. Run Script
+Run script and wait listing. Run:
 
 ```sh
-crontab -e
+python3 connector.py
 ```
-Add the following line to the crontab file to execute the script at the specified date and time:
 
-```sh
-0 12 20 9 * /usr/bin/python3 /absolute/path/to/connector.py
-```
-Make sure to replace /absolute/path/to/connector.py with the actual path to your Python script.
 
