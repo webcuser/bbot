@@ -85,8 +85,8 @@ def checkAndSellAtScheduledTime():
         time_diff = listing_date_obj - current_time
         hours_left, remainder = divmod(time_diff.seconds, 3600)
         minutes_left, seconds_left = divmod(remainder, 60)
-
-        print(f"Time left until sale: {hours_left} hours, {minutes_left} minutes, {seconds_left} seconds.")
+        
+        print(f"\rTime left until sale: {hours_left} hours, {minutes_left} minutes, {seconds_left} seconds.", end="")
         
         time.sleep(1)
 
