@@ -1,6 +1,6 @@
 # Sell Sheetcoins Script
 
-This project includes a Python script to automatically sell the farmed sheetcoins at the specified date and time of the listing. This README provides instructions on how to set up and run the script on a Linux Ubuntu server.
+This project includes a Python script to automatically sell the farmed sheetcoins at the specified date and time of the listing. This README provides instructions on how to set up and run the script on a Windows / Linux Ubuntu. You need installed python on your os, if you don't have it install it, follow https://www.python.org/downloads/.
 
 ## Setup
 
