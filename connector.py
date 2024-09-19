@@ -60,7 +60,7 @@ def sellCoins():
             side="Sell",
             orderType="Market",
             recv_window=6000,
-            qty=2000,  # Use available balance
+            qty=available_balance,  # Use available balance
             max_retrives=5
         )
         logging.info(f"Sell order sent: {order}")
