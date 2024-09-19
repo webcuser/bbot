@@ -34,7 +34,7 @@ LISTING_DATE = ""  # everytime like "19/09/2024 14:39" format
 Run script and wait listing. Run:
 
 ```sh
-python3 connector.py
+python3 main.py
 ```
 
 
