@@ -24,10 +24,11 @@ pip install -r requirements.txt
 Edit the config.py file with your credentials and settings. Open config.py and update the following values:
 
 ```sh
-API_KEY = 'la_tua_api_key'
-API_SECRET = 'la_tua_api_secret'
-ACCOUNT = 'UNIFIED'  # EX: UNIFIED, SPOT, CONTRACT
-SYMBOL = 'DOGSUSDT'  
+API_KEY = '' #bybit API_KEY
+API_SECRET = '' #bybit API_SECRET
+ACCOUNT = 'UNIFIED' # only unyfied
+SYMBOL = "DOGSUSDT" #add pire like DOGSUSDT or CATSUSDT for spot trade
+LISTING_DATE = ""  # everytime like "19/09/2024 14:39" format
 ```
 ### 4. Run Script
 Run script and wait listing. Run:
