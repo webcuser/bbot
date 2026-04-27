@@ -6,9 +6,9 @@ from pybit.unified_trading import HTTP
 
 # Set up logging
 logging.basicConfig(
-    filename="sell_log.log", 
-    level=logging.INFO,  
-    format="%(asctime)s - %(levelname)s - %(message)s"  
+    filename="sell_log.log",
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s"
 )
 
 # Convert LISTING_DATE string to a datetime object
@@ -21,23 +21,23 @@ client = HTTP(
 )
 
 symbol_without_usdt = SYMBOL.replace("USDT", "")
-available_balance = 0.0 
+available_balance = 0.0
 
 def getBalance():
     global available_balance
     try:
         balance = client.get_wallet_balance(accountType=ACCOUNT)
-        
+
         if balance['retCode'] == 0:
             balances = balance['result']['list'][0]['coin']
-            
+
             for coin_info in balances:
                 if coin_info['coin'] == symbol_without_usdt:
                     coin = coin_info['coin']
                     available_balance = float(coin_info.get('walletBalance', 0))  # Convert to float
                     logging.info(f"Coin: {coin}, Available Balance: {available_balance}")
                     print(f"Coin: {coin}, Available Balance: {available_balance}")
-                    break  
+                    break
         else:
             logging.error(f"API Error: {balance['retMsg']}")
             print(f"API Error: {balance['retMsg']}")
@@ -52,25 +52,47 @@ def sellCoins():
         print("Cannot sell, insufficient funds.")
         return
 
-    try:
-        # Place a sell order
-        order = client.place_order(
-            category="spot",  # spot
-            symbol=SYMBOL,
-            side="Sell",
-            orderType="Market",
-            recv_window=6000,
-            qty=available_balance,  # Use available balance
-            max_retrives=5
-        )
-        logging.info(f"Sell order sent: {order}")
-        print(f"Sell order sent: {order}")
-    except Exception as e:
-        logging.error(f"Error sending sell order: {e}")
-        print(f"Error sending sell order: {e}")
+    max_attempts = 10
+    for attempt in range(1, max_attempts + 1):
+        try:
+            # Place a sell order
+            order = client.place_order(
+                category="spot",
+                symbol=SYMBOL,
+                side="Sell",
+                orderType="Market",
+                recvWindow=6000,
+                qty=str(available_balance)
+            )
+            if order.get('retCode') == 0:
+                logging.info(f"Sell order successful on attempt {attempt}: {order}")
+                print(f"Sell order successful on attempt {attempt}: {order}")
+                return
+            else:
+                logging.error(f"API Error on attempt {attempt}: {order.get('retMsg')}")
+                print(f"API Error on attempt {attempt}: {order.get('retMsg')}")
+        except Exception as e:
+            logging.error(f"Error sending sell order on attempt {attempt}: {e}")
+            print(f"Error sending sell order on attempt {attempt}: {e}")
+
+        if attempt < max_attempts:
+            time.sleep(0.5)
+
+    logging.error("Failed to sell coins after all attempts.")
+    print("Failed to sell coins after all attempts.")
 
 def checkAndSell():
-    getBalance()
+    # Retry getting balance as it might take a few seconds to appear after listing
+    max_balance_attempts = 5
+    for attempt in range(1, max_balance_attempts + 1):
+        getBalance()
+        if available_balance > 0:
+            break
+        if attempt < max_balance_attempts:
+            logging.info(f"Balance is 0, retrying in 1s... (Attempt {attempt}/{max_balance_attempts})")
+            print(f"Balance is 0, retrying in 1s... (Attempt {attempt}/{max_balance_attempts})")
+            time.sleep(1)
+
     sellCoins()
 
 def checkAndSellAtScheduledTime():
@@ -80,14 +102,15 @@ def checkAndSellAtScheduledTime():
         if current_time >= listing_date_obj:
             logging.info(f"Sale time has arrived. Current time: {current_time}. Starting sell process.")
             checkAndSell()
-            break 
+            break
 
         time_diff = listing_date_obj - current_time
-        hours_left, remainder = divmod(time_diff.seconds, 3600)
+        total_seconds = int(time_diff.total_seconds())
+        hours_left, remainder = divmod(total_seconds, 3600)
         minutes_left, seconds_left = divmod(remainder, 60)
-        
+
         print(f"\rTime left until sale: {hours_left} hours, {minutes_left} minutes, {seconds_left} seconds.", end="")
-        
+
         time.sleep(1)
 
 if __name__ == "__main__":
